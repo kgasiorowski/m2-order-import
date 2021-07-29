@@ -1,6 +1,7 @@
 class Order:
     def __init__(self):
         self.items = []
+        self.discounts = []
         self.invoices = {}
         self.shipments = {}
         self.refunds = {}
