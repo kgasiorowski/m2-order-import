@@ -7,6 +7,7 @@ import requests
 from requests.models import Response
 import src.auth.auth as auth
 
+
 class MagentoRequest:
     def __init__(self):
         self.url = secret.url

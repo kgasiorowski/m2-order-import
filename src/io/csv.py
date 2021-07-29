@@ -3,6 +3,7 @@ from src.model.Order.Order import Order
 from src.model.Order.Item.Item import Item
 from src.model.Order.Discount.Discount import Discount
 
+
 def generateOrdersFromCsv(filename: str) -> Order:
     with open(filename, 'r') as raw_csv_file:
 
