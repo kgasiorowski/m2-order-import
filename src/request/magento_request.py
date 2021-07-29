@@ -1,8 +1,8 @@
 import src.auth.secret as secret
-from src.model.Refund import Refund
-from src.model.Order import Order
-from src.model.Invoice import Invoice
-from src.model.Shipment import Shipment
+from src.model.Order.Refund import Refund
+from src.model.Order.Order import Order
+from src.model.Order.Invoice import Invoice
+from src.model.Order.Shipment import Shipment
 import requests
 from requests.models import Response
 import src.auth.auth as auth
