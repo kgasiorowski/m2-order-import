@@ -3,26 +3,28 @@ from src.model.Refund import Refund
 from src.model.Order import Order
 from src.model.Invoice import Invoice
 from src.model.Shipment import Shipment
-from requests.models import Response, Request
-
+import requests
+from requests.models import Response
+import src.auth.auth as auth
 
 class MagentoRequest:
     def __init__(self):
         self.url = secret.url
         self.rest_path = 'rest/default/V1/'
-
+        self.auth_token = auth.get_auth()
 
     def buildRequestUrl(self) -> str:
         return self.url + '/' if not self.url.endswith('/') else '' + self.rest_path
 
-    def createOrder(self, order: Order) -> Response:
+    def createOrder(self, order: Order, verify=False) -> Response:
+        endpoint = self.buildRequestUrl() + 'orders/create'
+        return requests.put(endpoint, order.createRequestData())
+
+    def createInvoice(self, order: Order, invoice: Invoice, verify=False) -> Response:
         ...
 
-    def createInvoice(self, order: Order, invoice: Invoice) -> Response:
+    def createShipment(self, order: Order, shipment: Shipment, verify=False) -> Response:
         ...
 
-    def createShipment(self, order: Order, shipment: Shipment) -> Response:
-        ...
-
-    def createRefund(self, order: Order, refund: Refund) -> Response:
+    def createRefund(self, order: Order, refund: Refund, verify=False) -> Response:
         ...
