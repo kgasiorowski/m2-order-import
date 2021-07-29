@@ -1,6 +1,6 @@
 class Order:
     def __init__(self):
-        self.items = {}
+        self.items = []
         self.invoices = {}
         self.shipments = {}
         self.refunds = {}
@@ -43,7 +43,7 @@ class Order:
         self.shipping_zip = None
         self.shipping_city = None
         self.shipping_province_code = None
-        self.shipping_country = None
+        self.shipping_country_code = None
 
     def createRequestData(self) -> str:
         ...
