@@ -1,3 +1,6 @@
+import json
+
+
 class Order:
     def __init__(self):
         self.items = []
@@ -47,4 +50,107 @@ class Order:
         self.shipping_country_code = None
 
     def createRequestData(self) -> str:
-        ...
+
+        item_data = []
+        for item in self.items:
+            item_data.append({
+                "name": item.name,
+                "original_price": item.price,
+                "price": item.price,
+                "price_incl_tax": item.price,
+                "qty_ordered": item.quantity,
+                "row_total": item.total,
+                "row_total_incl_tax": item.total,
+                "sku": item.variant_sku,
+                "store_id": 1,
+                "weight": item.variant_weight,
+                "product_type": "simple"
+            })
+
+        return json.dumps({
+            "entity": {
+                "base_currency_code": self.currency,
+                "base_discount_amount": 0,
+                "base_grand_total": self.price_total,
+                "base_shipping_amount": 0,
+                "base_shipping_incl_tax": 0,
+                "base_shipping_tax_amount": 0,
+                "base_shipping_discount_amount": 0,
+                "base_subtotal": self.price_subtotal,
+                "base_subtotal_incl_tax": 29.99,
+                "base_total_due": 0,
+                "base_total_paid": self.price_total,
+                "base_to_global_rate": 1,
+                "base_to_order_rate": 1,
+                "created_at": self.created_at,
+                "customer_email": self.customer_email,
+                "customer_firstname": self.customer_first_name,
+                "customer_group_id": 1,
+                "customer_lastname": self.customer_last_name,
+                "email_sent": 1,
+                "global_currency_code": self.currency,
+                "grand_total": self.price_total,
+                "increment_id": self.name,
+                "order_currency_code": self.currency,
+                "state": "new",
+                "status": self.payment_status,
+                "store_currency_code": self.currency,
+                "store_to_base_rate": 0,
+                "store_to_order_rate": 0,
+                "store_id": 1,
+                "subtotal": self.price_subtotal,
+                "subtotal_incl_tax": self.price_subtotal,
+                "total_due": 0,
+                "total_paid": self.price_total,
+                "weight": self.weight_total,
+                "updated_at": self.updated_at,
+                "items": item_data,
+                "billing_address": {
+                    "address_type": "billing",
+                    "city": self.billing_city,
+                    "company": self.billing_company,
+                    "country_id": self.billing_country_code,
+                    "customer_address_id": 4,
+                    "email": self.customer_email,
+                    "firstname": self.billing_first_name,
+                    "lastname": self.billing_last_name,
+                    "postcode": self.billing_zip,
+                    "region": self.billing_province_code,
+                    "street": [
+                        self.billing_address_1 + " " + self.billing_address_2
+                    ],
+                    "telephone": self.billing_phone
+                },
+                "payment": {
+                    "amount_paid": self.price_total,
+                    "method": "checkmo"
+                },
+                "status_histories": [],
+                "extension_attributes": {
+                    "shipping_assignments": [{
+                        "shipping": {
+                            "address": {
+                                "address_type": "shipping",
+                                "city": self.shipping_city,
+                                "company": self.shipping_company,
+                                "country_id": self.shipping_country_code,
+                                "customer_address_id": 4,
+                                "email": self.customer_email,
+                                "firstname": self.shipping_first_name,
+                                "lastname": self.shipping_last_name,
+                                "postcode": self.shipping_zip,
+                                "region": self.shipping_province_code,
+                                "street": [
+                                    self.shipping_address_1 + " " + self.shipping_address_2
+                                ],
+                                "telephone": self.shipping_phone
+                            }
+                        }
+                    }],
+                    "applied_taxes": [],
+                    "item_applied_taxes": [],
+                    "converting_from_quote": False,
+                    "send_notification": 0
+                }
+            }
+        })

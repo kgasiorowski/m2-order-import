@@ -1,21 +1,18 @@
-import requests
-import csv
-from src.auth import auth as authentication
-from pprint import pprint
-import json
+import src.io.csv as csv
+import src.const.const as const
+from src.request.magento_request import MagentoRequest
+import warnings
 
-site_url = 'https://step2.test/'
-rest_path = 'rest/default/V1/'
-sku = 'testsku1'
 
-endpoint = f"{site_url}{rest_path}products/{sku}"
-auth = authentication.get_auth()
+def main():
 
-print(endpoint)
+    request = MagentoRequest()
 
-try:
-    response = requests.get(endpoint, auth=auth, verify=False)
-    pprint(json.loads(response.content.decode()))
-except Exception as e:
-    print("There was one of them errors")
-    print(e)
+    for order in csv.generateOrdersFromCsv(const.data_path + const.input_file_name):
+        response = request.createOrder(order)
+        print(response.status_code)
+
+
+if __name__ == "__main__":
+    warnings.simplefilter('ignore')
+    main()

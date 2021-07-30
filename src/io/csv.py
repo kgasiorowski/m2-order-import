@@ -2,10 +2,12 @@ import csv as py_csv
 from src.model.Order.Order import Order
 from src.model.Order.Item.Item import Item
 from src.model.Order.Discount.Discount import Discount
+from collections import Iterable
+from pprint import pprint
 
 
-def generateOrdersFromCsv(filename: str) -> Order:
-    with open(filename, 'r') as raw_csv_file:
+def generateOrdersFromCsv(filename: str) -> Iterable:
+    with open(filename, 'r', encoding='utf-8-sig') as raw_csv_file:
 
         csv_reader = py_csv.DictReader(raw_csv_file)
         order = None
@@ -25,6 +27,8 @@ def generateOrdersFromCsv(filename: str) -> Order:
                 extractRowInformation(line, order)
             else:
                 extractRowInformation(line, order)
+        # EOF - create an order from whatever's left
+        yield order
 
 
 def extractRowInformation(line: dict, order: Order) -> None:
@@ -37,7 +41,7 @@ def extractRowInformation(line: dict, order: Order) -> None:
             order.created_at = line['Created At']
             order.updated_at = line['Updated At']
             order.cancelled_at = line['Cancelled At']
-            order.cancel_reason = line['Cancel Reason']
+            order.cancel_reason = line['Cancel: Reason']
             order.currency = line['Currency']
             order.weight_total = line['Weight Total']
             order.price_total_line_items = line['Price: Total Line Items']
@@ -71,12 +75,13 @@ def extractRowInformation(line: dict, order: Order) -> None:
             order.shipping_country_code = line['Shipping: Country Code']
         # Add an item for this row
         item = Item()
-        item.line_id = line['Line: ID']
-        item.line_quantity = line['Line: Quantity']
-        item.line_price = line['Line: Price']
-        item.line_total = line['Line: Total']
-        item.line_variant_sku = line['Line: Variant SKU']
-        item.line_variant_weight = line['Line: Variant Weight']
+        item.id = line['Line: ID']
+        item.quantity = line['Line: Quantity']
+        item.price = line['Line: Price']
+        item.total = line['Line: Total']
+        item.variant_sku = line['Line: Variant SKU']
+        item.variant_weight = line['Line: Variant Weight']
+        item.name = line['Line: Name']
         order.items.append(item)
     elif line_type == 'Discount':
         discount = Discount()
