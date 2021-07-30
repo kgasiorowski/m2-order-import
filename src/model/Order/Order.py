@@ -67,6 +67,12 @@ class Order:
                 "product_type": "simple"
             })
 
+        discount_data = []
+        for discount in self.discounts:
+            discount_data.append({
+                "comment": f"Discount - {discount.line_title} - {discount.line_name}: {discount.line_discount}"
+            })
+
         return json.dumps({
             "entity": {
                 "base_currency_code": self.currency,
@@ -125,7 +131,7 @@ class Order:
                     "amount_paid": self.price_total,
                     "method": "checkmo"
                 },
-                "status_histories": [],
+                "status_histories": discount_data,
                 "extension_attributes": {
                     "shipping_assignments": [{
                         "shipping": {
