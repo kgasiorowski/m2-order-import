@@ -9,6 +9,9 @@ class Order:
         self.shipments = {}
         self.refunds = {}
 
+        self.original_id = None
+        self.magento_id = None
+
         self.name = None
         self.note = None
         self.created_at = None
@@ -65,7 +68,7 @@ class Order:
                 "store_id": 1,
                 "weight": item.variant_weight,
                 "product_type": "simple",
-                "additional_data": str(item.id)
+                "additional_data": str(item.original_id)
             })
 
         discount_data = []
@@ -161,3 +164,6 @@ class Order:
                 }
             }
         })
+
+    def createInvoiceRequestData(self) -> str:
+        ...

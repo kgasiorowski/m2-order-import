@@ -2,6 +2,7 @@ import csv as py_csv
 from src.model.Order.Order import Order
 from src.model.Order.Item.Item import Item
 from src.model.Order.Discount.Discount import Discount
+from src.model.Order.Invoice import Invoice
 from collections import Iterable
 
 
@@ -74,13 +75,20 @@ def extractRowInformation(line: dict, order: Order) -> None:
             order.shipping_country_code = line['Shipping: Country Code']
         # Add an item for this row
         item = Item()
-        item.id = line['Line: ID']
+        item.original_id = line['Line: ID']
         item.quantity = line['Line: Quantity']
         item.price = line['Line: Price']
         item.total = line['Line: Total']
         item.variant_sku = line['Line: Variant SKU']
         item.variant_weight = line['Line: Variant Weight']
         item.name = line['Line: Name']
+
+        # Check if this line item is being invoiced
+        invoice_id = int(line['Invoice: ID'])
+        if invoice_id:
+            order.invoices.setdefault(invoice_id, Invoice(invoice_id))
+            order.invoices[invoice_id].addItem(item)
+
         order.items.append(item)
     elif line_type == 'Discount':
         discount = Discount()
@@ -92,6 +100,4 @@ def extractRowInformation(line: dict, order: Order) -> None:
         # This and the next two line types are TODO
         ...
     elif line_type == 'Credit Memo':
-        ...
-    elif line_type == 'Invoice':
         ...

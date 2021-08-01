@@ -1,6 +1,7 @@
 class Item:
     def __init__(self):
-        self.id = None
+        self.original_id = None
+        self.magento_id = None
         self.quantity = None
         self.price = None
         self.total = None
