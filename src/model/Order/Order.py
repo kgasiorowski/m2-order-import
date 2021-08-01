@@ -64,7 +64,8 @@ class Order:
                 "sku": item.variant_sku,
                 "store_id": 1,
                 "weight": item.variant_weight,
-                "product_type": "simple"
+                "product_type": "simple",
+                "additional_data": str(item.id)
             })
 
         discount_data = []
