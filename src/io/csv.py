@@ -3,7 +3,6 @@ from src.model.Order.Order import Order
 from src.model.Order.Item.Item import Item
 from src.model.Order.Discount.Discount import Discount
 from collections import Iterable
-from pprint import pprint
 
 
 def generateOrdersFromCsv(filename: str) -> Iterable:
