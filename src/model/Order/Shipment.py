@@ -1,9 +1,9 @@
 from src.model.Order.Item import Item
 from src.model.Order.Tracking.Tracking import Tracking
-import json
+from src.model.AbstractModel import AbstractModel
 
 
-class Shipment:
+class Shipment(AbstractModel):
     def __init__(self, original_id: int):
         self.id = original_id
         self.items = []
@@ -15,17 +15,17 @@ class Shipment:
     def addTrack(self, track: Tracking):
         self.tracks.append(track)
 
-    def createRequestData(self, item_id_map: dict) -> str:
+    def getStructuredPayloadData(self, item_id_map: dict = None) -> dict:
         items = []
         for item in self.items:
-            items.append(item.createRequestData(item_id_map))
+            items.append(item.getStructuredPayloadData(item_id_map))
 
         tracks = []
         for track in self.tracks:
-            tracks.append(track.createRequestData())
+            tracks.append(track.getStructuredPayloadData())
 
         payload = {
             "items": items,
             "tracks": tracks
         }
-        return json.dumps(payload)
+        return payload

@@ -1,7 +1,7 @@
-import json
+from src.model.AbstractModel import AbstractModel
 
 
-class Order:
+class Order(AbstractModel):
     def __init__(self):
         self.items = []
         self.discounts = []
@@ -52,24 +52,11 @@ class Order:
         self.shipping_province_code = None
         self.shipping_country_code = None
 
-    def createRequestData(self) -> str:
+    def getStructuredPayloadData(self, item_id_map: dict = None) -> dict:
 
         item_data = []
         for item in self.items:
-            item_data.append({
-                "name": item.name,
-                "original_price": item.price,
-                "price": item.price,
-                "price_incl_tax": item.price,
-                "qty_ordered": item.quantity,
-                "row_total": item.total,
-                "row_total_incl_tax": item.total,
-                "sku": item.variant_sku,
-                "store_id": 1,
-                "weight": item.variant_weight,
-                "product_type": "simple",
-                "additional_data": str(item.original_id)
-            })
+            item_data.append(item.getStructuredPayloadData())
 
         discount_data = []
         for discount in self.discounts:
@@ -77,7 +64,7 @@ class Order:
                 "comment": f"Discount - {discount.line_title} - {discount.line_name}: {discount.line_discount}"
             })
 
-        return json.dumps({
+        return {
             "entity": {
                 "base_currency_code": self.currency,
                 "base_discount_amount": 0,
@@ -163,7 +150,4 @@ class Order:
                     "send_notification": 0
                 }
             }
-        })
-
-    def createInvoiceRequestData(self) -> str:
-        ...
+        }

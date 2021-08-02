@@ -6,6 +6,7 @@ from src.model.Order.Shipment import Shipment
 import requests
 from requests.models import Response
 import src.auth.auth as auth
+import json
 
 
 class MagentoRequest:
@@ -20,9 +21,10 @@ class MagentoRequest:
 
     def createOrder(self, order: Order, verify=False) -> Response:
         endpoint = self.buildBaseRequestUrl() + 'orders/create'
+        payload = order.getStructuredPayloadData()
         return requests.put(
             endpoint,
-            order.createRequestData(),
+            json.dumps(payload),
             auth=self.auth_token,
             headers=self.headers,
             verify=verify
@@ -30,10 +32,10 @@ class MagentoRequest:
 
     def createInvoice(self, invoice: Invoice, order: Order, item_id_map: dict, verify=False) -> Response:
         endpoint = f"{self.buildBaseRequestUrl()}order/{order.magento_id}/invoice"
-        payload = invoice.createRequestData(item_id_map)
+        payload = invoice.getStructuredPayloadData(item_id_map)
         return requests.post(
             endpoint,
-            payload,
+            json.dumps(payload),
             auth=self.auth_token,
             headers=self.headers,
             verify=verify
@@ -41,10 +43,10 @@ class MagentoRequest:
 
     def createShipment(self, shipment: Shipment, order: Order, item_id_map: dict, verify=False) -> Response:
         endpoint = f"{self.buildBaseRequestUrl()}order/{order.magento_id}/ship"
-        payload = shipment.createRequestData(item_id_map)
+        payload = shipment.getStructuredPayloadData(item_id_map)
         return requests.post(
             endpoint,
-            payload,
+            json.dumps(payload),
             auth=self.auth_token,
             headers=self.headers,
             verify=verify
