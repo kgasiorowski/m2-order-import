@@ -11,8 +11,7 @@ class Invoice(AbstractModel):
         self.items.append(item)
 
     def getStructuredPayloadData(self, item_id_map: dict = None) -> dict:
-        item_data = []
-        for item in self.items:
-            item_data.append(item.getStructuredPayloadData(item_id_map))
-        request_payload = {"items": item_data}
+        request_payload = {
+            "items": [item.getStructuredPayloadData(item_id_map) for item in self.items]
+        }
         return request_payload

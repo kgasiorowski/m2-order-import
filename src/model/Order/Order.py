@@ -54,15 +54,8 @@ class Order(AbstractModel):
 
     def getStructuredPayloadData(self, item_id_map: dict = None) -> dict:
 
-        item_data = []
-        for item in self.items:
-            item_data.append(item.getStructuredPayloadData())
-
-        discount_data = []
-        for discount in self.discounts:
-            discount_data.append({
-                "comment": f"Discount - {discount.line_title} - {discount.line_name}: {discount.line_discount}"
-            })
+        item_data = [item.getStructuredPayloadData() for item in self.items]
+        discount_data = [discount.getStructuredPayloadData() for discount in self.discounts]
 
         return {
             "entity": {
