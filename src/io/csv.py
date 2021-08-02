@@ -3,6 +3,8 @@ from src.model.Order.Order import Order
 from src.model.Order.Item.Item import Item
 from src.model.Order.Discount.Discount import Discount
 from src.model.Order.Invoice import Invoice
+from src.model.Order.Shipment import Shipment
+from src.model.Order.Tracking.Tracking import Tracking
 from collections import Iterable
 
 
@@ -39,10 +41,19 @@ def extractRowInformation(line: dict, order: Order) -> None:
     elif line_type == 'Discount':
         processDiscountLineType(line, order)
     elif line_type == 'Shipment':
-        # This and the next two line types are TODO
-        ...
+        processShipmentLineType(line, order)
     elif line_type == 'Credit Memo':
         ...
+
+
+def processShipmentLineType(line: dict, order: Order) -> None:
+    shipment_id = int(line['Shipment: ID'])
+    order.shipments.setdefault(shipment_id, Shipment(shipment_id))
+    track = Tracking()
+    track.title = line['Shipment: Title']
+    track.carrier_code = line['Shipment: Carrier Code']
+    track.tracking_number = line['Shipment: Tracking Number']
+    order.shipments[shipment_id].addTrack(track)
 
 
 def processDiscountLineType(line: dict, order: Order) -> None:
@@ -107,5 +118,10 @@ def processItemLineType(line: dict, order: Order) -> None:
     if invoice_id:
         order.invoices.setdefault(invoice_id, Invoice(invoice_id))
         order.invoices[invoice_id].addItem(item)
+
+    shipment_id = int(line['Shipment: ID'])
+    if shipment_id:
+        order.shipments.setdefault(shipment_id, Shipment(shipment_id))
+        order.shipments[shipment_id].addItem(item)
 
     order.items.append(item)

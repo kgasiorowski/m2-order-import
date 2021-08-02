@@ -39,8 +39,16 @@ class MagentoRequest:
             verify=verify
         )
 
-    def createShipment(self, order: Order, shipment: Shipment, verify=False) -> Response:
-        ...
+    def createShipment(self, shipment: Shipment, order: Order, item_id_map: dict, verify=False) -> Response:
+        endpoint = f"{self.buildBaseRequestUrl()}order/{order.magento_id}/ship"
+        payload = shipment.createRequestData(item_id_map)
+        return requests.post(
+            endpoint,
+            payload,
+            auth=self.auth_token,
+            headers=self.headers,
+            verify=verify
+        )
 
     def createRefund(self, order: Order, refund: Refund, verify=False) -> Response:
         ...
