@@ -29,7 +29,6 @@ def main():
                 invoice_response = request.createInvoice(invoice, order, item_id_map)
                 print(f"Invoice request returned {invoice_response.status_code}")
 
-
         else:
             error_message = json.loads(response.content.decode())['message']
             if 400 <= response.status_code < 500:
