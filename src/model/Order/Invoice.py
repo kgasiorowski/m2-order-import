@@ -13,9 +13,6 @@ class Invoice:
     def createRequestData(self, item_id_map: dict) -> str:
         item_data = []
         for item in self.items:
-            item_data.append({
-                'order_item_id': item_id_map[int(item.original_id)],
-                'qty': int(item.quantity)
-            })
+            item_data.append(item.createRequestData(item_id_map))
         request_payload = {"items": item_data}
         return json.dumps(request_payload)
