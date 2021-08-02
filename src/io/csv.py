@@ -5,6 +5,7 @@ from src.model.Order.Discount.Discount import Discount
 from src.model.Order.Invoice import Invoice
 from src.model.Order.Shipment import Shipment
 from src.model.Order.Tracking.Tracking import Tracking
+from src.model.Order.Refund import Refund
 from collections import Iterable
 
 
@@ -43,7 +44,14 @@ def extractRowInformation(line: dict, order: Order) -> None:
     elif line_type == 'Shipment':
         processShipmentLineType(line, order)
     elif line_type == 'Credit Memo':
-        ...
+        processCreditMemoLineType(line, order)
+
+
+def processCreditMemoLineType(line: dict, order: Order) -> None:
+    credit_memo_id = int(line['Credit Memo: ID'])
+    order.refunds.setdefault(credit_memo_id, Refund(credit_memo_id))
+    order.refunds[credit_memo_id].adjustment_amount = int(line['Credit Memo: Adjustment amount'])
+    order.refunds[credit_memo_id].shipping_amount = int(line['Credit Memo: Shipping amount'])
 
 
 def processShipmentLineType(line: dict, order: Order) -> None:
@@ -114,14 +122,19 @@ def processItemLineType(line: dict, order: Order) -> None:
     item.name = line['Line: Name']
 
     # Check if this line item is being invoiced
-    invoice_id = int(line['Invoice: ID'])
+    invoice_id = int(line['Invoice: ID']) if line['Invoice: ID'] else None
     if invoice_id:
         order.invoices.setdefault(invoice_id, Invoice(invoice_id))
         order.invoices[invoice_id].addItem(item)
 
-    shipment_id = int(line['Shipment: ID'])
+    shipment_id = int(line['Shipment: ID']) if line['Shipment: ID'] else None
     if shipment_id:
         order.shipments.setdefault(shipment_id, Shipment(shipment_id))
         order.shipments[shipment_id].addItem(item)
+
+    credit_memo_id = int(line['Credit Memo: ID']) if line['Credit Memo: ID'] else None
+    if credit_memo_id:
+        order.refunds.setdefault(credit_memo_id, Refund(credit_memo_id))
+        order.refunds[credit_memo_id].addItem(item)
 
     order.items.append(item)

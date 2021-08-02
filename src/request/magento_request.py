@@ -52,5 +52,13 @@ class MagentoRequest:
             verify=verify
         )
 
-    def createRefund(self, order: Order, refund: Refund, verify=False) -> Response:
-        ...
+    def createRefund(self, refund: Refund, order: Order, item_id_map: dict, verify=False) -> Response:
+        endpoint = f"{self.buildBaseRequestUrl()}order/{order.magento_id}/refund"
+        payload = refund.getStructuredPayloadData(item_id_map)
+        return requests.post(
+            endpoint,
+            json.dumps(payload),
+            auth=self.auth_token,
+            headers=self.headers,
+            verify=verify
+        )

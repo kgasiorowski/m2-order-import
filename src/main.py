@@ -33,14 +33,14 @@ def main():
                 shipment_response = request.createShipment(shipment, order, item_id_map)
                 print(f"Shipment request returned {shipment_response.status_code}")
 
+            for refund_id, refund in order.refunds.items():
+                refund_response = request.createRefund(refund, order, item_id_map)
+                print(f"Refund request returned {refund_response.status_code}")
+
         else:
             error_message = json.loads(response.content.decode())['message']
-            if 400 <= response.status_code < 500:
-                print(f"Order {order.name} could not be created, there was an error: "
-                      f"{response.reason} -> {error_message}")
-            elif response.status_code > 500:
-                print(f"Order {order.name} could not be created, there was a server error: "
-                      f"{response.reason} -> {error_message}")
+            print(f"Order {order.name} could not be created, there was an error: "
+                  f"{response.reason} -> {error_message}")
 
 
 if __name__ == "__main__":
