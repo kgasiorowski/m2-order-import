@@ -5,12 +5,13 @@ import warnings
 import json
 import src.model.Order.Item.ItemIDMap as ItemIDMap
 
+
 def main():
     request = MagentoRequest()
     filename = config.data_path + config.input_file_name
 
     for order in csv.generateOrdersFromCsv(filename):
-        response = request.createOrder(order)
+        response = request.createEntity(order, 'order')
         response_content = json.loads(response.content.decode())
 
         if response.status_code == 200:
@@ -23,15 +24,15 @@ def main():
             ItemIDMap.generateIdMap(response_content['items'])
 
             for invoice_id, invoice in order.invoices.items():
-                invoice_response = request.createInvoice(invoice, order)
+                invoice_response = request.createEntity(invoice, 'invoice', order.magento_id)
                 print(f"Invoice request returned {invoice_response.status_code}")
 
             for shipment_id, shipment in order.shipments.items():
-                shipment_response = request.createShipment(shipment, order)
+                shipment_response = request.createEntity(shipment, 'shipment', order.magento_id)
                 print(f"Shipment request returned {shipment_response.status_code}")
 
             for refund_id, refund in order.refunds.items():
-                refund_response = request.createRefund(refund, order)
+                refund_response = request.createEntity(refund, 'refund', order.magento_id)
                 print(f"Refund request returned {refund_response.status_code}")
 
         else:

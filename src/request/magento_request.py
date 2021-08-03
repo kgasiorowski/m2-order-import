@@ -1,8 +1,4 @@
 import src.auth.secret as secret
-from src.model.Order.Invoice import Invoice
-from src.model.Order.Refund import Refund
-from src.model.Order.Order import Order
-from src.model.Order.Shipment import Shipment
 from src.model.AbstractModel import AbstractModel
 import requests
 from requests.models import Response
@@ -20,60 +16,39 @@ class MagentoRequest:
         self.session.headers.update({"Content-type": "application/json"})
         self.session.auth = auth.get_auth()
 
-        self.request_types = {
-            "put": self.session.put,
-            "post": self.session.post,
-            "get": self.session.get
+        # Determines what endpoint and which function each entity type needs.
+        self.entity_types = {
+            'order': ('orders/create', self.session.put),
+            'invoice':  ('order/{}/invoice', self.session.post),
+            'shipment': ('order/{}/ship', self.session.post),
+            'refund': ('order/{}/refund', self.session.post)
         }
 
     def buildBaseRequestUrl(self) -> str:
         return self.url + '/' if not self.url.endswith('/') else self.url + self.rest_path
 
-    def createEntity(self,
-                     entity: AbstractModel,
-                     request_type: str,
-                     endpoint: str,
-                     verify: bool = False,
-                     ) -> Response:
+    def createEntity(
+        self,
+        entity: AbstractModel,
+        entity_type: str,
+        order_id: int = None,
+        verify: bool = False,
+    ) -> Response:
 
-        return self.request_types[request_type](
-            endpoint,
-            json.dumps(entity.getStructuredPayloadData()),
-            verify=verify
-        )
+        # Build our endpoint
+        endpoint = self.buildBaseRequestUrl()
+        endpoint += self.entity_types[entity_type][0]
+        endpoint = endpoint.format(order_id if order_id is not None else '')
 
-    def createOrder(self, order: Order, verify=False) -> Response:
-        endpoint = self.buildBaseRequestUrl() + 'orders/create'
-        return self.createEntity(
-            order,
-            "put",
-            endpoint,
-            verify=verify
-        )
+        # Generate our payload
+        payload = json.dumps(entity.getStructuredPayloadData())
 
-    def createInvoice(self, invoice: Invoice, order: Order, verify=False) -> Response:
-        endpoint = f"{self.buildBaseRequestUrl()}order/{order.magento_id}/invoice"
-        return self.createEntity(
-            invoice,
-            "post",
-            endpoint,
-            verify=verify
-        )
+        # Extract the request function to use (put, post, get, etc)
+        request_function = self.entity_types[entity_type][1]
 
-    def createShipment(self, shipment: Shipment, order: Order, verify=False) -> Response:
-        endpoint = f"{self.buildBaseRequestUrl()}order/{order.magento_id}/ship"
-        return self.createEntity(
-            shipment,
-            "post",
+        # Perform the request
+        return request_function(
             endpoint,
-            verify=verify
-        )
-
-    def createRefund(self, refund: Refund, order: Order, verify=False) -> Response:
-        endpoint = f"{self.buildBaseRequestUrl()}order/{order.magento_id}/refund"
-        return self.createEntity(
-            refund,
-            "post",
-            endpoint,
+            payload,
             verify=verify
         )
