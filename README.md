@@ -16,7 +16,6 @@ The CSV has the following format:
   - `Shipment`
   - `Credit Memo`
   - `Discount`
-  - `Transaction`
 - The order in which lines appear does not matter (within an order), so long as the main line item (with `Top Row` = TRUE) is first
 
 ### Invoices
