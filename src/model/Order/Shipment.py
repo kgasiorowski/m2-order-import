@@ -15,8 +15,8 @@ class Shipment(AbstractModel):
     def addTrack(self, track: Tracking):
         self.tracks.append(track)
 
-    def getStructuredPayloadData(self, item_id_map: dict = None) -> dict:
+    def getStructuredPayloadData(self) -> dict:
         return {
-            "items": [item.getStructuredPayloadData(item_id_map) for item in self.items],
+            "items": [item.getOtherStructuredPayloadData() for item in self.items],
             "tracks": [track.getStructuredPayloadData() for track in self.tracks]
         }

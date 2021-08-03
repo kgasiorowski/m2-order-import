@@ -8,7 +8,7 @@ class Discount(AbstractModel):
         self.line_name = None
         self.line_discount = None
 
-    def getStructuredPayloadData(self, item_id_map: dict = None) -> dict:
+    def getStructuredPayloadData(self) -> dict:
         return {
                 "comment": f"Discount - {self.line_title} - {self.line_name}: {self.line_discount}"
         }

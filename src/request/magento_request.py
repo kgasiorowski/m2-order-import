@@ -33,13 +33,12 @@ class MagentoRequest:
                      entity: AbstractModel,
                      request_type: str,
                      endpoint: str,
-                     item_id_map: dict = None,
                      verify: bool = False,
                      ) -> Response:
 
         return self.request_types[request_type](
             endpoint,
-            json.dumps(entity.getStructuredPayloadData(item_id_map)),
+            json.dumps(entity.getStructuredPayloadData()),
             verify=verify
         )
 
@@ -52,32 +51,29 @@ class MagentoRequest:
             verify=verify
         )
 
-    def createInvoice(self, invoice: Invoice, order: Order, item_id_map: dict, verify=False) -> Response:
+    def createInvoice(self, invoice: Invoice, order: Order, verify=False) -> Response:
         endpoint = f"{self.buildBaseRequestUrl()}order/{order.magento_id}/invoice"
         return self.createEntity(
             invoice,
             "post",
             endpoint,
-            item_id_map,
             verify=verify
         )
 
-    def createShipment(self, shipment: Shipment, order: Order, item_id_map: dict, verify=False) -> Response:
+    def createShipment(self, shipment: Shipment, order: Order, verify=False) -> Response:
         endpoint = f"{self.buildBaseRequestUrl()}order/{order.magento_id}/ship"
         return self.createEntity(
             shipment,
             "post",
             endpoint,
-            item_id_map,
             verify=verify
         )
 
-    def createRefund(self, refund: Refund, order: Order, item_id_map: dict, verify=False) -> Response:
+    def createRefund(self, refund: Refund, order: Order, verify=False) -> Response:
         endpoint = f"{self.buildBaseRequestUrl()}order/{order.magento_id}/refund"
         return self.createEntity(
             refund,
             "post",
             endpoint,
-            item_id_map,
             verify=verify
         )

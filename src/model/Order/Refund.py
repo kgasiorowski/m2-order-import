@@ -13,7 +13,7 @@ class Refund(AbstractModel):
     def addItem(self, item: Item):
         self.items.append(item)
 
-    def getStructuredPayloadData(self, item_id_map: dict = None) -> dict:
+    def getStructuredPayloadData(self) -> dict:
         refund_arguments = {}
         refund_arguments.setdefault("shipping_amount", self.shipping_amount)
         if self.adjustment_amount < 0:
@@ -21,6 +21,6 @@ class Refund(AbstractModel):
         else:
             refund_arguments.setdefault("adjustment_negative", self.adjustment_amount)
         return {
-            "items": [item.getStructuredPayloadData(item_id_map) for item in self.items],
+            "items": [item.getOtherStructuredPayloadData() for item in self.items],
             "arguments": refund_arguments
         }

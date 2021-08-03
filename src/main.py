@@ -3,7 +3,7 @@ import src.config.config as config
 from src.request.magento_request import MagentoRequest
 import warnings
 import json
-
+import src.model.Order.Item.ItemIDMap as ItemIDMap
 
 def main():
     request = MagentoRequest()
@@ -20,21 +20,18 @@ def main():
 
             # We need to remember the original ID's of items, and the item ID that magento has generated.
             # This is necessary for invoices and other API requests - so we map them in this data structure.
-            # Line ID -> Entity ID
-            item_id_map = {}
-            for item in response_content['items']:
-                item_id_map[int(item['additional_data'])] = item['item_id']
+            ItemIDMap.generateIdMap(response_content['items'])
 
             for invoice_id, invoice in order.invoices.items():
-                invoice_response = request.createInvoice(invoice, order, item_id_map)
+                invoice_response = request.createInvoice(invoice, order)
                 print(f"Invoice request returned {invoice_response.status_code}")
 
             for shipment_id, shipment in order.shipments.items():
-                shipment_response = request.createShipment(shipment, order, item_id_map)
+                shipment_response = request.createShipment(shipment, order)
                 print(f"Shipment request returned {shipment_response.status_code}")
 
             for refund_id, refund in order.refunds.items():
-                refund_response = request.createRefund(refund, order, item_id_map)
+                refund_response = request.createRefund(refund, order)
                 print(f"Refund request returned {refund_response.status_code}")
 
         else:
