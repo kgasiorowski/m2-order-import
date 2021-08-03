@@ -23,6 +23,7 @@ class Order(AbstractModel):
         self.price_total_line_items = None
         self.price_subtotal = None
         self.price_total = None
+        self.payment_gateway = None
         self.payment_status = None
         
         self.customer_email = None
@@ -113,7 +114,7 @@ class Order(AbstractModel):
                 },
                 "payment": {
                     "amount_paid": self.price_total,
-                    "method": "checkmo"
+                    "method": self.payment_gateway
                 },
                 "status_histories": discount_data,
                 "extension_attributes": {

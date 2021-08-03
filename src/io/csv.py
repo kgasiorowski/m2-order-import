@@ -45,6 +45,12 @@ def extractRowInformation(line: dict, order: Order) -> None:
         processShipmentLineType(line, order)
     elif line_type == 'Credit Memo':
         processCreditMemoLineType(line, order)
+    elif line_type == 'Transaction':
+        processTransactionLineType(line, order)
+
+
+def processTransactionLineType(line: dict, order: Order) -> None:
+    order.payment_gateway = line['Transaction: Gateway']
 
 
 def processCreditMemoLineType(line: dict, order: Order) -> None:
