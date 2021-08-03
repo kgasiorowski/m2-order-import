@@ -13,6 +13,6 @@ class Invoice(AbstractModel):
 
     def getStructuredPayloadData(self) -> dict:
         request_payload = {
-            "items": [item.getOtherStructuredPayloadData() for item in self.items]
+            "items": [item.getSubRequestFormattedData() for item in self.items]
         }
         return request_payload

@@ -17,6 +17,6 @@ class Shipment(AbstractModel):
 
     def getStructuredPayloadData(self) -> dict:
         return {
-            "items": [item.getOtherStructuredPayloadData() for item in self.items],
+            "items": [item.getSubRequestFormattedData() for item in self.items],
             "tracks": [track.getStructuredPayloadData() for track in self.tracks]
         }

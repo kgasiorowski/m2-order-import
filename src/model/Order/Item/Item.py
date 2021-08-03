@@ -29,7 +29,10 @@ class Item(AbstractModel):
             "additional_data": str(self.original_id)
         }
 
-    def getOtherStructuredPayloadData(self) -> dict:
+    # This function will return data formatted that's good for api requests which need
+    # item data formatted differently from what the order api needs.
+    # See invoices, shipments, and refunds.
+    def getSubRequestFormattedData(self) -> dict:
         item_id_map = ItemIDMap.getIdMap()
         return {
             'order_item_id': item_id_map[int(self.original_id)],

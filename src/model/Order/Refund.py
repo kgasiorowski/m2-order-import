@@ -21,6 +21,6 @@ class Refund(AbstractModel):
         else:
             refund_arguments.setdefault("adjustment_negative", self.adjustment_amount)
         return {
-            "items": [item.getOtherStructuredPayloadData() for item in self.items],
+            "items": [item.getSubRequestFormattedData() for item in self.items],
             "arguments": refund_arguments
         }
