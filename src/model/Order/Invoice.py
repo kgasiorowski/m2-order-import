@@ -1,6 +1,5 @@
 from src.model.Order.Item.Item import Item
 from src.model.AbstractModel import AbstractModel
-import src.model.Order.Item.ItemIDMap as ItemIDMap
 
 
 class Invoice(AbstractModel):
