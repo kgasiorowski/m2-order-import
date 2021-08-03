@@ -45,12 +45,6 @@ def extractRowInformation(line: dict, order: Order) -> None:
         processShipmentLineType(line, order)
     elif line_type == 'Credit Memo':
         processCreditMemoLineType(line, order)
-    elif line_type == 'Transaction':
-        processTransactionLineType(line, order)
-
-
-def processTransactionLineType(line: dict, order: Order) -> None:
-    order.payment_gateway = line['Transaction: Gateway']
 
 
 def processCreditMemoLineType(line: dict, order: Order) -> None:
@@ -117,6 +111,7 @@ def processItemLineType(line: dict, order: Order) -> None:
         order.shipping_city = line['Shipping: City']
         order.shipping_province_code = line['Shipping: Province Code']
         order.shipping_country_code = line['Shipping: Country Code']
+        order.payment_gateway = line['Transaction: Gateway']
     # Add an item for this row
     item = Item()
     item.original_id = line['Line: ID']
