@@ -3,6 +3,7 @@ from src.model.Order.Invoice import Invoice
 from src.model.Order.Refund import Refund
 from src.model.Order.Order import Order
 from src.model.Order.Shipment import Shipment
+from src.model.AbstractModel import AbstractModel
 import requests
 from requests.models import Response
 import src.auth.auth as auth
@@ -10,55 +11,73 @@ import json
 
 
 class MagentoRequest:
+
     def __init__(self):
         self.url = secret.url
         self.rest_path = 'rest/default/V1/'
-        self.auth_token = auth.get_auth()
-        self.headers = {"Content-type": "application/json"}
+
+        self.session = requests.Session()
+        self.session.headers.update({"Content-type": "application/json"})
+        self.session.auth = auth.get_auth()
+
+        self.request_types = {
+            "put": self.session.put,
+            "post": self.session.post,
+            "get": self.session.get
+        }
 
     def buildBaseRequestUrl(self) -> str:
         return self.url + '/' if not self.url.endswith('/') else self.url + self.rest_path
 
+    def createEntity(self,
+                     entity: AbstractModel,
+                     request_type: str,
+                     endpoint: str,
+                     item_id_map: dict = None,
+                     verify: bool = False,
+                     ) -> Response:
+
+        return self.request_types[request_type](
+            endpoint,
+            json.dumps(entity.getStructuredPayloadData(item_id_map)),
+            verify=verify
+        )
+
     def createOrder(self, order: Order, verify=False) -> Response:
         endpoint = self.buildBaseRequestUrl() + 'orders/create'
-        payload = order.getStructuredPayloadData()
-        return requests.put(
+        return self.createEntity(
+            order,
+            "put",
             endpoint,
-            json.dumps(payload),
-            auth=self.auth_token,
-            headers=self.headers,
             verify=verify
         )
 
     def createInvoice(self, invoice: Invoice, order: Order, item_id_map: dict, verify=False) -> Response:
         endpoint = f"{self.buildBaseRequestUrl()}order/{order.magento_id}/invoice"
-        payload = invoice.getStructuredPayloadData(item_id_map)
-        return requests.post(
+        return self.createEntity(
+            invoice,
+            "post",
             endpoint,
-            json.dumps(payload),
-            auth=self.auth_token,
-            headers=self.headers,
+            item_id_map,
             verify=verify
         )
 
     def createShipment(self, shipment: Shipment, order: Order, item_id_map: dict, verify=False) -> Response:
         endpoint = f"{self.buildBaseRequestUrl()}order/{order.magento_id}/ship"
-        payload = shipment.getStructuredPayloadData(item_id_map)
-        return requests.post(
+        return self.createEntity(
+            shipment,
+            "post",
             endpoint,
-            json.dumps(payload),
-            auth=self.auth_token,
-            headers=self.headers,
+            item_id_map,
             verify=verify
         )
 
     def createRefund(self, refund: Refund, order: Order, item_id_map: dict, verify=False) -> Response:
         endpoint = f"{self.buildBaseRequestUrl()}order/{order.magento_id}/refund"
-        payload = refund.getStructuredPayloadData(item_id_map)
-        return requests.post(
+        return self.createEntity(
+            refund,
+            "post",
             endpoint,
-            json.dumps(payload),
-            auth=self.auth_token,
-            headers=self.headers,
+            item_id_map,
             verify=verify
         )
